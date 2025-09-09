@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: playlistai-api-canary
+  labels:
+    app: playlistai-api
+    track: canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: playlistai-api
+      track: canary
+  template:
+    metadata:
+      labels:
+        app: playlistai-api
+        track: canary
+    spec:
+      containers:
+        - name: api
+          image: playlistai-api:canary
+          ports:
+            - containerPort: 8088
+          env:
+            - name: API_PORT
+              value: "8088"
+            - name: REDIS_URL
+              value: "redis://redis-service:6379/0"
+            - name: USE_FAISS
+              value: "false"
+            - name: MODEL_NAME
+              value: "transformer"
+            - name: MODEL_D
+              value: "256"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8088
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8088
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: model-data
+              mountPath: /app/data/artifacts
+              readOnly: true
+      volumes:
+        - name: model-data
+          persistentVolumeClaim:
+            claimName: model-pvc
+
