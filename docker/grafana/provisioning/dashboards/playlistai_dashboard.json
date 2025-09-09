@@ -1,0 +1,167 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "PlayListAI Dashboard",
+    "tags": ["playlistai"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Request Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(request_duration_ms_count[5m])",
+            "legendFormat": "QPS"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Latency Percentiles",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(request_duration_ms_bucket[5m]))",
+            "legendFormat": "p50"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(request_duration_ms_bucket[5m]))",
+            "legendFormat": "p95"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(request_duration_ms_bucket[5m]))",
+            "legendFormat": "p99"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Model Forward Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(model_forward_ms_bucket[5m]))",
+            "legendFormat": "p50"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(model_forward_ms_bucket[5m]))",
+            "legendFormat": "p95"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(model_forward_ms_bucket[5m]))",
+            "legendFormat": "p99"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 4,
+        "title": "Cache Hit Ratio",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "cache_hit_ratio",
+            "legendFormat": "Hit Ratio"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 5,
+        "title": "Error Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(errors_total[5m])",
+            "legendFormat": "Errors/sec"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 8
+        }
+      },
+      {
+        "id": 6,
+        "title": "Drift Metrics",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "drift_psi",
+            "legendFormat": "PSI"
+          },
+          {
+            "expr": "drift_ks_p",
+            "legendFormat": "KS p-value"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "5s"
+  }
+}
+
